@@ -18,7 +18,6 @@
 			wo=ws.opener();
 			setTimeout(function(){
 				map=new plus.maps.Map("map");
-				map.centerAndZoom(new plus.maps.Point(116.3977,39.906016),12);
 				createMarker();
 				// 创建子窗口
 				createSubview();
@@ -46,12 +45,29 @@
 			});
 		}
 		function createMarker(){
-			var marker=new plus.maps.Marker(new plus.maps.Point(116.347496,39.970191));
-			marker.setIcon("/logo.png");
-			marker.setLabel("HBuilder");
-			var bubble = new plus.maps.Bubble("打造最好的HTML5移动开发工具");
-			marker.setBubble(bubble);
-			map.addOverlay(marker);
+			// 通知结果方法
+			function locationCallback( state, point ) {
+				if ( 0 == state ) {
+					map.centerAndZoom(point,19);
+					var marker=new plus.maps.Marker(point);
+					marker.setIcon("/logo.png");
+					var bubble = new plus.maps.Bubble("是多少");
+					marker.setBubble(bubble);
+					map.addOverlay(marker);
+				} else{
+					mui.toast("无法定位")
+				}
+			}
+			
+			// 获取用户位置信息
+			map.getUserLocation( locationCallback );
+			map.getCurrentCenter( function(state, point){
+				if ( 0 == state ) {
+					mui.toast( "Center Position:" + point.getLng() + "," + point.getLat() );
+				} else {
+					mui.toast("无法定位");
+				}
+			} );
 		}
 		function createSubview(){
 			if('Android'!=plus.os.name){
